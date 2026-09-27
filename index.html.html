@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>استمارة البيانات الشخصية للطالب</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>استمارة البيانات الشخصية للطالب</h1>
+        <p>يرجى تعبئة جميع الحقول المطلوبة بدقة.</p>
+
+        <form id="studentForm">
+            
+            <fieldset>
+                <legend>البيانات الشخصية</legend>
+                <div class="form-group">
+                    <label for="fullName">الاسم الرباعي:</label>
+                    <input type="text" id="fullName" name="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="idNumber">رقم الهوية / الإقامة:</label>
+                    <input type="text" id="idNumber" name="idNumber" pattern="[0-9]{10}" title="يجب أن يتكون من 10 أرقام" required>
+                </div>
+                <div class="form-group">
+                    <label for="grade">المرحلة الدراسية:</label>
+                    <select id="grade" name="grade" required>
+                        <option value="">اختر المرحلة...</option>
+                        <option value="ابتدائي">ابتدائي</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="ثانوي">ثانوي</option>
+                    </select>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>بيانات الاتصال</legend>
+                <div class="form-group">
+                    <label for="phone">رقم الجوال:</label>
+                    <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" title="يجب أن يتكون من 10 أرقام" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="submit-btn" id="submitBtn">إرسال البيانات</button>
+            <p id="statusMessage" style="text-align: center; margin-top: 15px; font-weight: bold;"></p>
+        </form>
+    </div>
+
+    <script>
+        // تم دمج رابط تطبيق الويب الخاص بك هنا مباشرة
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxQuCfFCI6cGZhhANs7609rqufhKCRyFivSXie6lQ0X8f1NpJgBDwV_xrbmxGnNhNS6/exec'; 
+        const form = document.getElementById('studentForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const statusMessage = document.getElementById('statusMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // منع إعادة تحميل الصفحة التقليدية
+            
+            // 1. تغيير حالة الزر والرسالة أثناء الإرسال
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الحفظ...';
+            statusMessage.textContent = '';
+            statusMessage.style.color = '#2980b9';
+
+            // 2. جمع البيانات من النموذج
+            const formData = new FormData(form);
+
+            // 3. إرسال البيانات إلى Google Apps Script
+            fetch(scriptURL, { method: 'POST', body: formData })
+                .then(response => {
+                    // 4. في حال نجاح الإرسال
+                    submitBtn.textContent = 'تم الحفظ ✓';
+                    submitBtn.style.backgroundColor = '#27ae60';
+                    statusMessage.textContent = 'تم حفظ البيانات بنجاح في النظام!';
+                    statusMessage.style.color = '#27ae60';
+                    
+                    // 5. تفريغ النموذج وإعادة الزر لحالته الطبيعية بعد 3 ثواني
+                    setTimeout(() => {
+                        form.reset();
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'إرسال البيانات';
+                        submitBtn.style.backgroundColor = ''; 
+                        statusMessage.textContent = '';
+                    }, 3000);
+                })
+                .catch(error => {
+                    // 6. في حال حدوث خطأ في الشبكة أو الاتصال
+                    console.error('Error!', error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'إرسال البيانات';
+                    statusMessage.textContent = 'حدث خطأ أثناء الحفظ، يرجى التحقق من الإنترنت والمحاولة مرة أخرى.';
+                    statusMessage.style.color = '#e74c3c';
+                });
+        });
+    </script>
+
+</body>
+</html>
